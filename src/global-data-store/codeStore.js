@@ -3,6 +3,7 @@ import {defineStore} from 'pinia'
 
 export const useCodeStore = defineStore('code', {
     state: () => ({
+        selectedLanguage: 'auto', // 用户选择的语言，默认为自动
         detectedLanguage: '未识别',
         rawCode: '',    // 原始代码（输入区）
         emitCode:'', // 高亮按钮传递的数据

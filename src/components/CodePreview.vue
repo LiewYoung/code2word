@@ -31,9 +31,14 @@ const olId="renderedHighlightCode";
 const renderHighlightCodeAndCreateOl = () => {
   if(codeStore.emitCode) {
     // 使用 hljs 进行高亮处理
-    const result = hljs.highlightAuto(codeStore.emitCode); // 获取代码文本内容
+    let result;
+    if (codeStore.selectedLanguage === 'auto') {
+      result = hljs.highlightAuto(codeStore.emitCode); // 自动检测
+    } else {
+      result = hljs.highlight(codeStore.emitCode, {language: codeStore.selectedLanguage}); // 指定语言
+    }
     const highlightedCode = result.value;
-    codeStore.detectedLanguage = result.language || "未识别";
+    codeStore.detectedLanguage = (codeStore.selectedLanguage === 'auto' ? result.language : codeStore.selectedLanguage) || "未识别";
 
 
     // 判断是否存在旧的渲染代码。
@@ -45,9 +50,9 @@ const renderHighlightCodeAndCreateOl = () => {
     const ol = document.createElement('ol');
     ol.id = 'renderedHighlightCode';
     if(codeStore.outside) {
-      ol.style="list-style: decimal;font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;margin: 10px 10px 10px 4em !important;";
+      ol.style="list-style: decimal;font-family: Consolas, 'Courier New', monospace;margin: 10px 10px 10px 4em !important;";
     }else {
-      ol.style="list-style: decimal;font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;margin: 10px 0 !important;";
+      ol.style="list-style: decimal;font-family: Consolas, 'Courier New', monospace;margin: 10px 0 !important;";
     }
     ol.style.fontSize = fontSize.value + "px";
     // 将每一行代码分割成数组
@@ -57,9 +62,9 @@ const renderHighlightCodeAndCreateOl = () => {
     lines.forEach(line => {
       const li = document.createElement('li');
       if(codeStore.outside) {
-        li.style = "font-family: monospace;white-space: pre-wrap;word-wrap: break-word;border-right: 4px solid #87CEEB;border-left: 4px solid #87CEEB;list-style: decimal-leading-zero;list-style-position: outside !important;padding: 0 4px 0 4px !important;" + (index++ % 2 == 0 ? "background-color: #F6F9FB;" : "background-color: #FDFDFD;");
+        li.style = "font-family: Consolas, 'Courier New', monospace;white-space: pre-wrap;word-wrap: break-word;border-right: 4px solid #87CEEB;border-left: 4px solid #87CEEB;list-style: decimal-leading-zero;list-style-position: outside !important;padding: 0 4px 0 4px !important;" + (index++ % 2 == 0 ? "background-color: #F6F9FB;" : "background-color: #FDFDFD;");
       }else {
-        li.style = "font-family: monospace;white-space: pre-wrap;word-wrap: break-word;border-right: 4px solid #87CEEB;border-left: 4px solid #87CEEB;list-style: decimal-leading-zero;list-style-position: inside !important;padding: 0 4px 0 4px !important;" + (index++ % 2 == 0 ? "background-color: #F6F9FB;" : "background-color: #FDFDFD;");
+        li.style = "font-family: Consolas, 'Courier New', monospace;white-space: pre-wrap;word-wrap: break-word;border-right: 4px solid #87CEEB;border-left: 4px solid #87CEEB;list-style: decimal-leading-zero;list-style-position: inside !important;padding: 0 4px 0 4px !important;" + (index++ % 2 == 0 ? "background-color: #F6F9FB;" : "background-color: #FDFDFD;");
       }
       li.innerHTML = line;  // 设置高亮代码为 li 的内容
       ol.appendChild(li);    // 将 li 添加到 ol 中
@@ -91,7 +96,8 @@ onMounted(() => {
 });
 
 // 监听 highlightedCode 的变化，触发 applyHighlight 方法
-watch(() => codeStore.emitCode, () => {
+// 监听 highlightedCode 的变化，触发 applyHighlight 方法
+watch(() => [codeStore.emitCode, codeStore.selectedLanguage], () => {
   renderHighlightCodeAndCreateOl()
 })
 // 字体大小调整方法
@@ -119,49 +125,79 @@ const decreaseFontSize = () => {
 <style scoped>
 .preview-container {
   flex: 1;
-  padding: 10px;
-  color: white;
-  overflow: auto;
+  padding: 16px;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font: var(--md-sys-typescale-title-medium);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 8px;
+  padding-left: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 32px; /* Fixed height for alignment */
+  position: relative;
 }
 
 pre {
+  flex: 1;
   width: 100%;
-  height: 100%;
-  color: #000;
-  font-family: monospace;
-  background-color: #fff;
-  border: 1px solid #000;
+  color: var(--md-sys-color-on-surface);
+  font-family: 'Roboto Mono', monospace;
+  background-color: var(--md-sys-color-surface);
+  border-radius: 8px;
+  border: 1px solid var(--md-sys-color-outline-variant); 
+  /* No heavy border, just outline variant */
   font-size: 12px;
-  overflow-y: auto;
+  overflow: auto;
+  padding: 0; /* Let ol handle padding */
+  box-shadow: var(--md-sys-elevation-1);
 }
 
 .detected-language {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  right: 0;
-  top: 0;
-  margin-bottom: 10px;
+  font: var(--md-sys-typescale-label-medium);
+  color: var(--md-sys-color-on-surface-variant);
 }
 
 .font-size-controls {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
   position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.font-size-controls span {
+  font: var(--md-sys-typescale-label-medium);
+  min-width: 32px;
+  text-align: center;
 }
 
 .font-size-controls button {
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
   border: none;
-  padding: 1px 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 12px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  transition: background-color 0.2s;
 }
 
 .font-size-controls button:hover {
-  background-color: #45a049;
+  background-color: var(--md-sys-color-secondary);
+  color: var(--md-sys-color-on-secondary);
 }
 </style>
 

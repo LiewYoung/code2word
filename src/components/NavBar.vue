@@ -19,16 +19,18 @@ import {Utils} from "@/utils/utils";
 
 <style scoped>
 .navbar {
-  height: 50px;
-  background-color: #333;
-  color: white;
+  height: 64px; /* MD3 Small Top App Bar height */
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
   display: flex;
-  justify-content: space-between; /* 两端对齐 */
+  justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 16px; /* MD3 horizontal padding */
   position: fixed;
   top: 0;
   width: 100vw;
+  z-index: 100;
+  box-shadow: var(--md-sys-elevation-2); /* MD3 Elevation */
 }
 
 .logo-container {
@@ -39,22 +41,31 @@ import {Utils} from "@/utils/utils";
 .logo {
   width: 40px;
   height: 40px;
-  margin-right: 10px;
+  margin-right: 12px;
+}
+
+h1 {
+  font: var(--md-sys-typescale-title-large);
+  margin: 0;
 }
 
 .nav-links {
   display: flex;
-  gap: 15px; /* 设置链接间距 */
+  gap: 24px;
 }
 
 .link {
-  color: white;
+  color: var(--md-sys-color-on-surface-variant);
   text-decoration: none;
-  font-size: 14px;
-  transition: color 0.3s;
+  font: var(--md-sys-typescale-label-large);
+  transition: color 0.2s ease-in-out;
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 20px;
 }
 
 .link:hover {
-  color: #ffd700; /* 鼠标悬停变色 */
+  color: var(--md-sys-color-on-surface);
+  background-color: rgba(255, 255, 255, 0.08); /* Hover state */
 }
 </style>

@@ -66,7 +66,7 @@ Utils.printAttention();
   display: flex;
   flex: 1;
   height: 100vh;
-  padding-top: 50px;
+  padding-top: 64px; /* Adjusted for MD3 NavBar height */
 }
 
 /* 弹窗样式 */

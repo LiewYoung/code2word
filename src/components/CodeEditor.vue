@@ -16,19 +16,39 @@ const codeStore = useCodeStore()
 <style scoped>
 .editor-container {
   flex: 1;
-  padding: 10px;
-  color: white;
-  overflow: auto;
+  padding: 16px;
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font: var(--md-sys-typescale-title-medium);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 8px;
+  padding-left: 4px;
 }
 
 textarea {
-  padding: 10px 20px;
-  width: 100%;
-  height: 100%;
-  font-family: monospace;
-  font-size: 16px;
-  font-weight: bolder;
+  flex: 1;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid var(--md-sys-color-outline);
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: 'Roboto Mono', monospace; /* Keep monospace for code */
+  font-size: 14px;
+  line-height: 1.5;
   resize: none;
   overflow-y: auto;
+  transition: border-color 0.2s;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: var(--md-sys-color-primary);
+  border-width: 2px;
+  padding: 15px; /* Compensate for border width change to prevent jump */
 }
 </style>
